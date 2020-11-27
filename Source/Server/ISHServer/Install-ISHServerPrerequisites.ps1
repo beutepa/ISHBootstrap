@@ -20,7 +20,7 @@ param (
     [Parameter(Mandatory=$false)]
     [pscredential]$Credential=$null,
     [Parameter(Mandatory=$true)]
-    [ValidateSet("12","13")]
+    [ValidateSet("12","13","14","15")]
     [string]$ISHServerVersion,
     [Parameter(Mandatory=$false)]
     [switch]$InstallOracle=$false,
@@ -64,7 +64,15 @@ try
     {
         Install-ISHToolMSXML4
     }
-    Install-ISHToolJAVA
+    if($ISHServerVersion -ge "14")
+    {
+        Install-ISHToolAdoptOpenJRE
+        Install-ISHToolAdoptOpenJDK
+    }
+    else
+    {
+        Install-ISHToolJAVA
+    }
     Install-ISHToolJavaHelp
     Install-ISHToolHtmlHelp
     Install-ISHToolAntennaHouse
@@ -72,7 +80,10 @@ try
     {
         Install-ISHToolOracleODAC
     }
-
+    if($ISHServerVersion -eq "15")
+    {
+        Install-ISHDotNetHosting 
+    }
     Write-Progress @scriptProgress -Status "Initializing"
     Initialize-ISHLocale
     Initialize-ISHIIS

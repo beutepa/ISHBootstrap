@@ -1,7 +1,9 @@
 ﻿param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet("12.0.3","12.0.4","13.0.0")]
-    [string]$ISHVersion
+    [ValidateSet("12.0.3","12.0.4","13.0.0","13.0.1","13.0.2","14.0.0","14.0.1","14.0.2","14.0.3","15.0.0")]
+    [string]$ISHVersion,
+    [Parameter(Mandatory=$false)]
+    [switch]$EmptyDB
 )
 
 $cmdletsPaths="$PSScriptRoot\..\..\Cmdlets"
@@ -55,10 +57,20 @@ $segments=@(
     $ishCDPath
     "Database"
     "Dump"
-    "SQLServer2014"
-    "20171018.ISHEmpty-13.0.0-sqlserver2014.isource.InfoShare-OasisDita.1.2.bak"
+    "SQLServer*"
 )
+
+if ($EmptyDB.IsPresent)
+{
+    $segments+=@("*ISHEmpty*.bak")
+}
+else
+{
+    $segments+=@("*ISHDemo*.bak")
+}
+
 $infoShareBakPath=$segments -join '\'
+$infoShareBakPath=Resolve-Path $infoShareBakPath
 
 $dbName="InfoShare"
 $sqlRestoreDBCmd=@"
